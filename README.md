@@ -8,10 +8,10 @@ $ ytt t -R -f nginx-ingress/ | kapp -y deploy -a nginx-ingress -f -
 
 (Included nginx ingress is not configured for production use, only for demo purposes)
 
-Deploy app (see `app/app.yml` for definition; relies on [k8s-lib](https://github.com/k14s/k8s-lib))
+Deploy app (see `app1/app.yml` for definition; relies on [k8s-lib](https://github.com/k14s/k8s-lib))
 
 ```bash
-$ ytt t -R -f app/ | kapp -y deploy -a app1 -f -
+$ ytt t -R -f app1/ | kapp -y deploy -a app1 -f -
 ```
 
 See that there is only one Pod that's running the app
