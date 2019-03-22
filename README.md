@@ -1,15 +1,17 @@
 # k8s-lib-demo
 
-Deploy nginx ingress
+Deploy nginx ingress with [ytt](https://github.com/k14s/ytt) and [kapp](https://github.com/k14s/kapp)
 
 ```bash
-$ ytt t -R -f nginx-ingress | kapp -y deploy -a nginx-ingress -f -
+$ ytt t -R -f nginx-ingress/ | kapp -y deploy -a nginx-ingress -f -
 ```
 
-Deploy app:
+(Included nginx ingress is not configured for production use, only for demo purposes)
+
+Deploy app (see app/app.yml for its definition)
 
 ```bash
-$ ytt t -R -f app | kapp -y deploy -a app1 -f -
+$ ytt t -R -f app/ | kapp -y deploy -a app1 -f -
 ```
 
 See that there is only one Pod that's running the app
@@ -18,7 +20,7 @@ See that there is only one Pod that's running the app
 $ kapp inspect -a app1 -t
 ```
 
-Expose ingress to your machine
+Expose ingress to your machine with [kwt](https://github.com/k14s/kwt)
 
 ```bash
 $ sudo -E kwt net start
