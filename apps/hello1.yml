@@ -4,14 +4,15 @@
 #@ load("@github.com/k14s/k8s-lib:app/module.lib.yml", "app")
 
 #@ hello_port = 80
-#@ def hello_container():
+
+#@ def container():
 image: hashicorp/http-echo
 args:
 - -listen=:(@= str(hello_port) @)
-- -text=hellozzz!
+- -text=hello1!
 #@ end
 
-#@ def hello_changes():
+#@ def updates():
 #@overlay/match by=overlay.subset({"kind":"Ingress"})
 ---
 metadata:
@@ -19,8 +20,10 @@ metadata:
   annotations:
     #!@overlay/match missing_ok=True
     #!nginx.ingress.kubernetes.io/temporal-redirect: https://www.google.com
+
     #!@overlay/match missing_ok=True
     #!nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+
     #!@overlay/match missing_ok=True
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
 
@@ -35,6 +38,11 @@ spec:
       targetAverageUtilization: 3
 #@ end
 
-#@ app_config = app.make("hello", hello_container(), namespace="default", port=hello_port).config()
-#@ app_config = overlay.apply(app_config, hello_changes())
---- #@ template.replace(app_config)
+#@ config = app.make(
+#@   "hello1",
+#@   container(),
+#@   namespace="default",
+#@   port=hello_port,
+#@ ).config()
+
+--- #@ template.replace(overlay.apply(config, updates()))
