@@ -56,7 +56,7 @@ Deploy simple-app with help of [ytt](https://github.com/k14s/ytt), [kbld](https:
 $ ytt t -R -f . | kbld apply -f - | kapp -y deploy -a simple-app -f - --diff-changes
 ```
 
-`kbld` requires presence of Docker as it will build a container based on `simple-app/src` directory. If you are not using minikube (which provides a local Docker instance via `eval $(minikube docker-env)`), you will have to add below snippet to `simple-app/manifest.yml`
+`kbld` requires Docker CLI (`docker`) available on $PATH as it builds a container based on `simple-app/src` directory. You can grab Docker CLI binaries [here](https://docs.docker.com/install/linux/docker-ce/binaries/). If you are using minikube you'll have to expose Docker daemon via `eval $(minikube docker-env)`. Otherwise you will have to add configuration (below) for pushing images to `simple-app/manifest.yml` so that built image is available to your Kubernetes cluster.
 
 ```yaml
 ---
