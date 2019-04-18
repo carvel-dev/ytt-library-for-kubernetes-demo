@@ -48,7 +48,7 @@ You can also access second app
 $ curl http://nginx-ingress-controller.default.svc.cluster.local/ -H "Host: hello2.com"
 ```
 
-## simple-app (to exercise kbld)
+## simple-app (exercises kbld)
 
 Deploy simple Golang app with help of [ytt](https://github.com/k14s/ytt), [kbld](https://github.com/k14s/kbld), and [kapp](https://github.com/k14s/kapp)
 
@@ -58,7 +58,7 @@ $ ytt t -R -f . | kbld apply -f - | kapp -y deploy -a simple-app -f - --diff-cha
 
 `kbld` requires Docker CLI (`docker`) available on $PATH as it builds a container based on `simple-app/src/` directory. You can grab Docker CLI binaries [here](https://docs.docker.com/install/linux/docker-ce/binaries/).
 
-If you are using minikube you'll have to expose Docker daemon via `eval $(minikube docker-env)`. Otherwise you will have to add configuration (below) for pushing images to `simple-app/manifest.yml` so that built image is available to your Kubernetes cluster.
+If you are using minikube you'll have to expose Docker daemon via `eval $(minikube docker-env)` where `kbld` will run. Otherwise, you will have to add configuration (below) for pushing images to `simple-app/manifest.yml` so that built image is available to your Kubernetes cluster. (Don't forget to run `docker login` so that images can be pushed.)
 
 ```yaml
 ---
