@@ -1,0 +1,46 @@
+#@ load("@ytt:template", "template")
+#@ load("@ytt:overlay", "overlay")
+
+#@ load("@github.com/k14s/k8s-lib:app/module.lib.yml", "app")
+
+#@ port = 8080
+
+#@ def container():
+image: simple-app-image
+#@ end
+
+#@ def updates():
+#@overlay/match by=overlay.subset({"kind":"Ingress"})
+---
+metadata:
+  #@overlay/match missing_ok=True
+  annotations:
+    #!@overlay/match missing_ok=True
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+
+#@overlay/match by=overlay.subset({"kind":"HorizontalPodAutoscaler"})
+---
+spec:
+  metrics:
+  #@overlay/match by=overlay.subset({"resource":{"name":"cpu"}})
+  - type: Resource
+    resource:
+      name: cpu
+      targetAverageUtilization: 3
+#@ end
+
+#@ config = app.make(
+#@   "simple-app",
+#@   container(),
+#@   namespace="default",
+#@   port=port,
+#@ ).config()
+
+--- #@ template.replace(overlay.apply(config, updates()))
+
+---
+apiVersion: kbld.k14s.io/v1alpha1
+kind: Sources
+sources:
+- image: simple-app-image
+  path: src/

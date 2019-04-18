@@ -50,13 +50,15 @@ $ curl http://nginx-ingress-controller.default.svc.cluster.local/ -H "Host: hell
 
 ## simple-app (to exercise kbld)
 
-Deploy simple-app with help of [ytt](https://github.com/k14s/ytt), [kbld](https://github.com/k14s/kbld), and [kapp](https://github.com/k14s/kapp)
+Deploy simple Golang app with help of [ytt](https://github.com/k14s/ytt), [kbld](https://github.com/k14s/kbld), and [kapp](https://github.com/k14s/kapp)
 
 ```bash
 $ ytt t -R -f . | kbld apply -f - | kapp -y deploy -a simple-app -f - --diff-changes
 ```
 
-`kbld` requires Docker CLI (`docker`) available on $PATH as it builds a container based on `simple-app/src` directory. You can grab Docker CLI binaries [here](https://docs.docker.com/install/linux/docker-ce/binaries/). If you are using minikube you'll have to expose Docker daemon via `eval $(minikube docker-env)`. Otherwise you will have to add configuration (below) for pushing images to `simple-app/manifest.yml` so that built image is available to your Kubernetes cluster.
+`kbld` requires Docker CLI (`docker`) available on $PATH as it builds a container based on `simple-app/src/` directory. You can grab Docker CLI binaries [here](https://docs.docker.com/install/linux/docker-ce/binaries/).
+
+If you are using minikube you'll have to expose Docker daemon via `eval $(minikube docker-env)`. Otherwise you will have to add configuration (below) for pushing images to `simple-app/manifest.yml` so that built image is available to your Kubernetes cluster.
 
 ```yaml
 ---
@@ -66,3 +68,5 @@ destinations:
 - image: simple-app-image
   newImage: docker.io/dkalinin/simple-app # or whatever push target your Docker can push to
 ```
+
+`simple-app-k8s-lib/` directory is similar to `simple-app/` with an exception that it uses k8s-lib to generate app configuration.
