@@ -6,7 +6,7 @@
 #@ port = 8080
 
 #@ def container():
-image: simple-app-image
+image: simple-app-k8s-lib-image
 #@ end
 
 #@ def updates():
@@ -30,7 +30,7 @@ spec:
 #@ end
 
 #@ config = app.make(
-#@   "simple-app",
+#@   "simple-app-k8s-lib",
 #@   container(),
 #@   namespace="default",
 #@   port=port,
@@ -42,5 +42,5 @@ spec:
 apiVersion: kbld.k14s.io/v1alpha1
 kind: Sources
 sources:
-- image: simple-app-image
+- image: simple-app-k8s-lib-image
   path: src/
