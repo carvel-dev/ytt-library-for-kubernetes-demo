@@ -1,20 +1,12 @@
 #@ load("@ytt:template", "template")
 #@ load("@ytt:overlay", "overlay")
-
 #@ load("@github.com/k14s/k8s-lib:app/module.lib.yml", "app")
 
 #@ def container():
 image: simple-app-k8s-lib-image
 #@ end
 
-#@ config = app.make(
-#@   "simple-app-k8s-lib",
-#@   container(),
-#@   namespace="default",
-#@   port=8080,
-#@ ).config()
-
---- #@ template.replace(config)
+--- #@ template.replace(app.make("simple-app-k8s-lib", container(), namespace="default", port=8080).config())
 
 ---
 apiVersion: kbld.k14s.io/v1alpha1
