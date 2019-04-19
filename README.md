@@ -53,7 +53,7 @@ $ curl http://nginx-ingress-controller.default.svc.cluster.local/ -H "Host: hell
 Deploy simple Golang app with help of [ytt](https://github.com/k14s/ytt), [kbld](https://github.com/k14s/kbld), and [kapp](https://github.com/k14s/kapp)
 
 ```bash
-$ ytt t -R -f . | kbld apply -f - | kapp -y deploy -a simple-app -f - --diff-changes
+$ ytt t -R -f . | kbld -f - | kapp -y deploy -a simple-app -f - --diff-changes
 ```
 
 `kbld` requires Docker CLI (`docker`) available on $PATH as it builds a container based on `simple-app/src/` directory. You can grab Docker CLI binaries [here](https://docs.docker.com/install/linux/docker-ce/binaries/).
