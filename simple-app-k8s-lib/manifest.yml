@@ -3,13 +3,26 @@
 
 #@ load("@github.com/k14s/k8s-lib:app/module.lib.yml", "app")
 
-#@ port = 8080
-
 #@ def container():
 image: simple-app-k8s-lib-image
 #@ end
 
-#@ def updates():
+#@ config = app.make(
+#@   "simple-app-k8s-lib",
+#@   container(),
+#@   namespace="default",
+#@   port=8080,
+#@ ).config()
+
+--- #@ template.replace(config)
+
+---
+apiVersion: kbld.k14s.io/v1alpha1
+kind: Sources
+sources:
+- image: simple-app-k8s-lib-image
+  path: src/
+
 #@overlay/match by=overlay.subset({"kind":"Ingress"})
 ---
 metadata:
@@ -27,20 +40,3 @@ spec:
     resource:
       name: cpu
       targetAverageUtilization: 3
-#@ end
-
-#@ config = app.make(
-#@   "simple-app-k8s-lib",
-#@   container(),
-#@   namespace="default",
-#@   port=port,
-#@ ).config()
-
---- #@ template.replace(overlay.apply(config, updates()))
-
----
-apiVersion: kbld.k14s.io/v1alpha1
-kind: Sources
-sources:
-- image: simple-app-k8s-lib-image
-  path: src/
