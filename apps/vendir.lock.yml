@@ -1,0 +1,9 @@
+apiVersion: vendir.k14s.io/v1alpha1
+directories:
+- contents:
+  - git:
+      commitTitle: use ytt library for app library
+      sha: 204dd53acb41da43fe9cc46c467aeb25e21529be
+    path: github.com/k14s/k8s-lib
+  path: config/_ytt_lib
+kind: LockConfig

@@ -1,0 +1,40 @@
+#@ load("@ytt:template", "template")
+#@ load("@ytt:overlay", "overlay")
+#@ load("@ytt:library", "library")
+
+#@ def config(port=80):
+name: hello2
+port: #@ port
+namespace: default
+domain: hello2.com
+#@overlay/replace
+container:
+  image: hashicorp/http-echo
+  args:
+  #@yaml/text-templated-strings
+  - -listen=:(@= str(port) @)
+  - -text=hello2!
+#@ end
+
+#@ app_config = library.get("github.com/k14s/k8s-lib/app").with_data_values(config()).eval()
+
+#@ def updates():
+#@overlay/match by=overlay.subset({"kind":"Ingress"})
+---
+metadata:
+  #@overlay/match missing_ok=True
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+
+#@overlay/match by=overlay.subset({"kind":"HorizontalPodAutoscaler"})
+---
+spec:
+  metrics:
+  #@overlay/match by=overlay.subset({"resource":{"name":"cpu"}})
+  - type: Resource
+    resource:
+      name: cpu
+      targetAverageUtilization: 3
+#@ end
+
+--- #@ template.replace(overlay.apply(app_config, updates()))

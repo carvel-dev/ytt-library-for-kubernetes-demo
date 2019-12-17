@@ -1,0 +1,11 @@
+apiVersion: vendir.k14s.io/v1alpha1
+kind: Config
+directories:
+- path: config/_ytt_lib
+  contents:
+  - path: github.com/k14s/k8s-lib
+    git:
+      url: https://github.com/k14s/k8s-lib
+      ref: origin/master
+    includePaths:
+    - app/**/*

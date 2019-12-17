@@ -1,0 +1,41 @@
+#@ load("@ytt:data", "data")
+#@ load("refs.lib.yml", "resource_labels", "deployment_name")
+
+---
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: #@ data.values.name + "-hpa"
+  labels: #@ resource_labels()
+  #@ if/end data.values.namespace:
+  namespace: #@ data.values.namespace
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: #@ deployment_name()
+  minReplicas: 1
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      targetAverageUtilization: 50
+---
+#! If you are not using kapp, this resource should be removed through overlays:
+#!   #@overlay/match by=overlay.subset({"apiVersion": "kapp.k14s.io/v1alpha1", "kind": "Config"})
+#!   #@overlay/remove
+#!   ---
+apiVersion: kapp.k14s.io/v1alpha1
+kind: Config
+rebaseRules:
+- path: [spec, replicas]
+  type: copy
+  #! Prefer HPA configured value from the cluster
+  sources: [existing]
+  resourceMatchers:
+  - kindNamespaceNameMatcher:
+      kind: Deployment
+      #@ if/end data.values.namespace:
+      namespace: #@ data.values.namespace
+      name: #@ deployment_name()

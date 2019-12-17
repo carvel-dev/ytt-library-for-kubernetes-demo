@@ -1,0 +1,39 @@
+#@ load("@ytt:template", "template")
+#@ load("@ytt:overlay", "overlay")
+#@ load("@ytt:library", "library")
+
+#@ def config():
+name: simple-app-k8s-lib
+namespace: default
+port: 8080
+#@overlay/replace
+container:
+  image: simple-app-k8s-lib-image
+#@ end
+
+--- #@ template.replace(library.get("github.com/k14s/k8s-lib/app").with_data_values(config()).eval())
+
+---
+apiVersion: kbld.k14s.io/v1alpha1
+kind: Sources
+sources:
+- image: simple-app-k8s-lib-image
+  path: src/
+
+#@overlay/match by=overlay.subset({"kind":"Ingress"})
+---
+metadata:
+  #@overlay/match missing_ok=True
+  annotations:
+    #!@overlay/match missing_ok=True
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+
+#@overlay/match by=overlay.subset({"kind":"HorizontalPodAutoscaler"})
+---
+spec:
+  metrics:
+  #@overlay/match by=overlay.subset({"resource":{"name":"cpu"}})
+  - type: Resource
+    resource:
+      name: cpu
+      targetAverageUtilization: 3
